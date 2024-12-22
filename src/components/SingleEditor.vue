@@ -9,6 +9,12 @@
                 v-else-if="['String', 'Text', 'IDStr'].includes(theType)"></el-input>
             <DictionarySelect :value="safeGet(value, theName)" v-else-if="['Enum', 'Dictionary'].includes(theType)"
                 :dictionary="theDictionary" @change="(newValue) => safeSet(value, theName, newValue)" />
+            <el-select v-else-if="['StringList'].includes(theType)" multiple filterable allow-create
+                default-first-option :value="jsonSafeGet(value, theName)"
+                @change="(newValue) => jsonSafeSet(value, theName, newValue)">
+                <el-option v-for="item in jsonSafeGet(value, theName)" :key="item" :label="item"
+                    :value="item"></el-option>
+            </el-select>
             <el-date-picker v-else-if="['Date'].includes(theType)" :value="safeGet(value, theName)" type="date"
                 placeholder="选择日期" :value-format="globalDateFormat"
                 @input="(newValue) => safeSet(value, theName, newValue)">
@@ -44,6 +50,12 @@ export default {
     },
     methods: {
         safeGet, safeSet,
+        jsonSafeGet(value, name) {
+            return JSON.parse(safeGet(value, name));
+        },
+        jsonSafeSet(value, name, newValue) {
+            safeSet(value, name, JSON.stringify(newValue));
+        },
         init() {
             if (this.meta) {
                 const entityMeta = this.$metadata.entitiesMap[this.entity];

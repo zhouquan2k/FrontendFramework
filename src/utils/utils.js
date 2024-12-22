@@ -188,9 +188,9 @@ export function globalErrorHandler(err, vm, info) {
   if (simpleMessage) {
     Element.Message({
       // dangerouslyUseHTMLString: true,
-      message: `${simpleMessage} (${errInfo})`,
+      message: `${simpleMessage} ` + ((errInfo != simpleMessage) ? `(${errInfo})` : ''),
       type: 'warning',
-      duration: 5000,
+      duration: 15000,
       showClose: true,
       center: false
     });
