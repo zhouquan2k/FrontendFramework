@@ -33,7 +33,7 @@ module.exports = {
   /**
    * 是否显示动态标题
    */
-  dynamicTitle: false,
+  dynamicTitle: true,
 
   /**
    * @type {string | array} 'production' | ['production', 'development']
@@ -45,11 +45,11 @@ module.exports = {
 
   loginNeeded: true,
 
-  env: process.env.VUE_APP_ENV,
+  env: process.env.VUE_APP_ENV || 'DEV?',
 
-  filePreviewUrl: process.env.VUE_APP_FILE_PREVIEW_URL,
+  filePreviewUrl: '',
 
-  title: 'GCP',
+  title: process.env.VUE_APP_TITLE || 'Progartisan?', 
 
-  logo: '/progartisan.jpeg'
+  logo: process.env.VUE_APP_LOGO || '/favicon.jpeg'
 }

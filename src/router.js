@@ -11,7 +11,7 @@ export function initRouter() {
     const appRoute = {
         name: 'app',
         path: '/',
-        redirect: '/system/home',
+        redirect: '/gcp/home',
         component: Layout,
         children: [
             {
@@ -26,7 +26,8 @@ export function initRouter() {
         appRoute,
         {
             path: '/login',
-            component: (resolve) => require(['@sys/login'], resolve),
+            // component: (resolve) => require(['@sys/login'], resolve),
+            component: (resolve) => require(['@gcp/view/login'], resolve),
         },
     ];
 

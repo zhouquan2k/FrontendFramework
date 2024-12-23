@@ -1,7 +1,7 @@
 import { login, logout, getInfo, getVersion } from '@sys/security_api.js';
 import { getAccessToken, setToken, removeToken, getRefreshToken } from '@/utils/auth'
 
-const user = {
+const system = {
   state: {
     id: 0, // 用户编号
     name: '', //login name
@@ -9,6 +9,7 @@ const user = {
     avatar: '',
     roles: [],
     permissions: null,
+    version: '',
   },
 
   mutations: {
@@ -136,4 +137,4 @@ const user = {
   }
 }
 
-export default user
+export default system

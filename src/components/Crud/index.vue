@@ -131,6 +131,7 @@ export default {
         searchVisible: { default: () => false },
         searchParam: { default: () => ({}) }, //fixed search param
         searches: { default: () => { } }, // other search inputs, can be set to empty when click 'reset'
+        initSearchParams: { default: () => ({}) }, // 初始化搜索参数
         extSearchMeta: { default: () => [] },
         formCols: { type: Number, default: 1 },
         actionCntToHide: { default: () => 2 },
@@ -209,7 +210,7 @@ export default {
             this.callMethod(command, params);
         },
         onReset() {
-            this.searchForm = {};
+            this.searchForm = { ...this.initSearchParams };
             this.onSearch();
         },
         // for compatible, rediect to onSearch
@@ -256,7 +257,7 @@ export default {
                 if (this.mode == 'update') {
                     response = await this.apis.update(this.detail[this.metadata.idField], this.detail);
                 } else if (this.mode == 'create') {
-                    response = await this.apis.create({ ...this.detail, ...this.searchForm });
+                    response = await this.apis.create({ ...this.detail });
                 }
                 this.$message.success('保存成功');
                 await this.getList();
@@ -291,7 +292,7 @@ export default {
     },
     created() {
         initMetadata(this, this.apis, this.name);
-        Object.assign(this.searchForm, this.searches);
+        this.searchForm = { ...this.searches, ...this.initSearchParams };
         if (this.initList) this.getList();
     }
 };
