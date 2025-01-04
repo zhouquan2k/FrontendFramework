@@ -1,7 +1,7 @@
 const getters = {
-  title: state => '',
+  title: state => state.project?.project ? `【${state.project?.project?.projectCode}】${state.project?.project?.medicineName ? state.project?.project?.medicineName : state.project?.project?.projectName?.substring(0, 30)}` : '',
   taskCount: state => state.task?.taskCount,
-  url: state => state.project.project ? state.project?.project?.url : null,
+  url: state => state.project?.project ? state.project?.project?.url : null,
   sidebar: state => state.app.sidebar,
   size: state => state.app.size,
   device: state => state.app.device,
