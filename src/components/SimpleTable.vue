@@ -187,7 +187,7 @@ export default {
         getFilters(column) {
             if (this.list && this.filters.includes(column)) {
                 const uniqueValues = [...new Set(this.list.map(item => safeGet(item, column)))];
-                return uniqueValues.map(item => ({ text: item, value: item })).slice(0, 10);
+                return uniqueValues.map(item => ({ text: String(item), value: item })).sort((a, b) => a.text?.localeCompare(b.text));
             }
             return null;
 
