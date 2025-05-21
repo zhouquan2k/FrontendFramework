@@ -42,7 +42,7 @@
         <el-table :key="tableUpdateKey" ref="table" class="main-table" :data="list" :row-key="getRowKey"
             :default-expand-all="false" @selection-change="handleSelectionChange" @row-dblclick="handleDblClick"
             :row-class-name="rowClassName" @expand-change="row => $emit('expand-change', row)" :empty-text="emptyText"
-            :highlight-current-row="true" @current-change="row => $emit('current-change', row)"
+            :highlight-current-row="highlightCurrentRow" @current-change="row => $emit('current-change', row)"
             :summary-method="summaryMethod ?? defaultSummaryMethod" :show-summary="showSummary" v-on="$listeners">
             <el-table-column v-if="checkboxVisible" type="selection" width="55" />
             <el-table-column type="expand" v-if="$scopedSlots['expand']" width="20">
@@ -148,6 +148,7 @@ export default {
         oneTimeSave: { type: Boolean, default: () => true },
         showDialog: { type: String },
         writePermission: { type: String, default: () => null },
+        highlightCurrentRow: { default: () => true },
     },
     watch: {
         fixedSearchParams: {
@@ -322,6 +323,12 @@ export default {
                 }
             });
         },
+        toggleRowSelection(row, selected) {
+            this.$refs.table.toggleRowSelection(row, selected);
+        },
+        getTable() {
+            return this.$refs.table;
+        }
     },
     mounted() {
         if (this.data) {
