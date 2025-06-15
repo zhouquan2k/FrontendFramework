@@ -123,6 +123,7 @@ export default {
         groupByColumns: { type: Array, default: () => null },
         groupTotalColumns: { type: Array, default: () => [] },
         searchMethod: { type: Function },
+        titleMethod: { type: Function },
         actions: { type: Array, default: () => ([]) },
         buttons: { type: Array, default: () => ([]) },
         searches: { type: Array, default: () => ([]) },
@@ -193,6 +194,7 @@ export default {
 
         },
         onExport() {
+            const tableTitle = this.titleMethod ? this.titleMethod() : ''; // 表头标题
             const columns = this.$refs.table.columns;
             const headers = columns.filter(col => col.label && col.property).map(col => col.label);
             const data = this.list.map(row => columns.filter(col => col.label).map(col => {
@@ -201,8 +203,21 @@ export default {
                     return this.dictFormatter(theCol?.type === 'RefID' ? theCol.refData.startsWith('dictionary:') ? theCol.refData.substring(11) : theCol.refData : theCol.typeName, safeGet(row, theCol.name));
                 return safeGet(row, col.property);
             }));
+            
+            // 创建表头行，只在第一列显示标题，其他列为空
+            const titleRow = [tableTitle, ...new Array(headers.length - 1).fill('')];
+            
             const wb = XLSX.utils.book_new();
-            const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+            const ws = XLSX.utils.aoa_to_sheet([titleRow, headers, ...data]);
+            
+            // 合并第一行的所有单元格
+            if (headers.length > 1) {
+                ws['!merges'] = [{
+                    s: { r: 0, c: 0 }, // 起始位置：第1行第1列
+                    e: { r: 0, c: headers.length - 1 } // 结束位置：第1行最后一列
+                }];
+            }
+            
             XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
             XLSX.writeFile(wb, "export.xlsx");
         },
