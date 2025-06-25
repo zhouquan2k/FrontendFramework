@@ -2,7 +2,7 @@
 FROM nginx:stable-alpine as production-stage
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD curl -fsSL http://localhost/health || exit 1
+  CMD curl -fsSL http://localhost:8080/health || exit 1
 #COPY --from=build-stage /app/dist /usr/share/nginx/html
 COPY dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
