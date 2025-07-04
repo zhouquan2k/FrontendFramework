@@ -1,13 +1,10 @@
 /* Layout */
 import Layout from '@/layout'
 import store from './store'
-
-import { getRoutes as getSystemRoutes } from '@sys/router'
-import { getRoutes as getGcpRoutes } from '@gcp/router'
-
+import { loadAllModules } from '@/utils/moduleLoader'
 
 // TODO refactor to system module
-export function initRouter() {
+export async function initRouter() {
     const appRoute = {
         name: 'app',
         path: '/',
@@ -31,15 +28,35 @@ export function initRouter() {
         },
     ];
 
-    // get routes from all modules
-    [...getGcpRoutes(), ...getSystemRoutes()].forEach(r => {
-        appRoute.children.push(r);
-    });
+    // 动态加载路由模块
+    await loadDynamicRoutes(appRoute);
 
     // convert to menu
     store.dispatch('ProcessMenus', appRoute);
 
     return constantRoutes;
+}
+
+/**
+ * 动态加载路由模块
+ * @param {Object} appRoute 应用路由对象
+ */
+async function loadDynamicRoutes(appRoute) {
+    try {
+        console.log('开始加载动态路由...');
+        
+        // 使用 moduleLoader 获取所有模块（会使用缓存，不会重复加载）
+        const { router: dynamicRoutes } = await loadAllModules();
+        
+        // 直接将动态路由添加到 appRoute.children
+        if (Array.isArray(dynamicRoutes)) {
+            appRoute.children.push(...dynamicRoutes);
+        }
+        
+        console.log('动态路由加载完成');
+    } catch (error) {
+        console.warn('动态路由加载失败，可能会影响部分功能:', error);
+    }
 }
 
 

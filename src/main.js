@@ -36,24 +36,44 @@ Vue.prototype.$print = print;
 import Router from 'vue-router'
 Vue.use(Router);
 import { initRouter } from './router';
+import { loadAllModules } from '@/utils/moduleLoader';
 
-function init() {
-  const allRoutes = initRouter();
-  const router = new Router({
-    base: process.env.VUE_APP_APP_NAME ? process.env.VUE_APP_APP_NAME : "/",
-    mode: 'history', // 去掉url中的#
-    scrollBehavior: () => ({ y: 0 }),
-    routes: allRoutes
-  });
+async function init() {
+  try {
+    // 1. 首先加载所有动态模块（只调用一次）
+    console.log('开始加载动态模块...');
+    const allModules = await loadAllModules();
+    
+    // 2. 初始化路由（使用缓存的模块数据）
+    console.log('开始初始化路由...');
+    const allRoutes = await initRouter();
+    const router = new Router({
+      base: process.env.VUE_APP_APP_NAME ? process.env.VUE_APP_APP_NAME : "/",
+      mode: 'history', // 去掉url中的#
+      scrollBehavior: () => ({ y: 0 }),
+      routes: allRoutes
+    });
 
-  const _vue = new Vue({
-    router,
-    store,
-    render: h => h(App),
-  }).$mount('#app');
-  window.vue = _vue;
-  // export default _vue;
+    // 3. 创建 Vue 实例
+    const _vue = new Vue({
+      router,
+      store,
+      render: h => h(App),
+    }).$mount('#app');
+    
+    window.vue = _vue;
 
+    // 4. 注册 store 模块（使用缓存的模块数据）
+    await store.initDynamicModules();
+
+    // 5. 依赖动态模块的逻辑（如菜单、权限等）可放在这里
+    // 例如：store.dispatch('ProcessMenus', ...);
+
+    console.log('应用初始化完成');
+  } catch (error) {
+    console.error('应用初始化失败:', error);
+    // 可以在这里添加错误处理逻辑
+  }
 }
 
 init();

@@ -15,6 +15,7 @@ module.exports = defineConfig({
         '@': resolve('src'),
         '@sys': resolve('src/system'),
         '@gcp': resolve('src/gcp'),
+        '@kb': resolve('src/kb'),
       },
     },
     performance: {
