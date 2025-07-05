@@ -72,10 +72,16 @@ async function loadStoreModules(configs) {
       for (const storeConfig of config.store) {
         const module = findModuleByAlias(storeConfig.path);
         if (module && typeof module === 'object') {
-          storeModules[storeConfig.name] = module;
-          console.log(`✅ 成功加载 Store 模块: ${storeConfig.name}`);
+          // 支持多个名称注册同一个模块
+          const names = Array.isArray(storeConfig.name) ? storeConfig.name : [storeConfig.name];
+          
+          names.forEach(name => {
+            storeModules[name] = module;
+            console.log(`✅ 成功加载 Store 模块: ${name}`);
+          });
         } else {
-          console.warn(`未找到 Store 模块: ${storeConfig.path}`);
+          const names = Array.isArray(storeConfig.name) ? storeConfig.name.join(', ') : storeConfig.name;
+          console.warn(`未找到 Store 模块: ${storeConfig.path} (${names})`);
         }
       }
     }
@@ -86,39 +92,76 @@ async function loadStoreModules(configs) {
 
 /**
  * 根据配置动态加载路由模块
- * 返回扁平化的路由数组，便于直接使用
+ * 返回按 inLayout 分类的路由对象
  */
 async function loadRouterModules(configs) {
-  const allRoutes = [];
+  const inLayoutRoutes = [];
+  const rootRoutes = [];
   
   console.log('开始动态加载路由模块...');
   
   for (const config of configs) {
     if (config.router && Array.isArray(config.router)) {
       for (const routerConfig of config.router) {
-        const module = findModuleByAlias(routerConfig.path);
-        let routes = null;
-        if (module) {
-          if (typeof module.getRoutes === 'function') {
-            routes = module.getRoutes();
-          } else if (Array.isArray(module)) {
-            routes = module;
-          } else if (module && typeof module === 'object' && module.Routes) {
-            routes = module.Routes;
+        if (routerConfig.path) {
+          const module = findModuleByAlias(routerConfig.path);
+          let routes = null;
+          
+          if (module) {
+            if (typeof module.getRoutes === 'function') {
+              routes = module.getRoutes();
+            } else if (Array.isArray(module)) {
+              routes = module;
+            } else if (module && typeof module === 'object' && module.Routes) {
+              routes = module.Routes;
+            } else if (module.default && Array.isArray(module.default)) {
+              routes = module.default;
+            }
           }
-        }
-        if (routes && Array.isArray(routes)) {
-          // 直接将路由添加到扁平化数组中
-          allRoutes.push(...routes);
-          console.log(`✅ 成功加载路由模块: ${routerConfig.name}`);
-        } else {
-          console.warn(`未找到或格式不正确的路由模块: ${routerConfig.path}`);
+          
+          if (routes && Array.isArray(routes)) {
+            // 按 inLayout 字段分类路由
+            routes.forEach(route => {
+              const inLayout = route.inLayout !== false; // 默认为 true
+              
+              if (inLayout) {
+                inLayoutRoutes.push(route);
+              } else {
+                rootRoutes.push(route);
+              }
+            });
+            
+            console.log(`✅ 成功加载路由模块: ${routerConfig.name}`);
+          } else {
+            console.warn(`未找到或格式不正确的路由模块: ${routerConfig.path}`);
+          }
         }
       }
     }
   }
   
-  return allRoutes;
+  return { inLayoutRoutes, rootRoutes };
+}
+
+
+
+/**
+ * 加载应用路由配置
+ */
+async function loadAppRouteConfig(configs) {
+  // 找到第一个定义了 appRoute 的配置
+  for (const config of configs) {
+    if (config.appRoute && typeof config.appRoute === 'object') {
+      return config.appRoute;
+    }
+  }
+  
+  // 如果没有找到，返回默认配置
+  return {
+    name: 'app',
+    path: '/',
+    children: []
+  };
 }
 
 /**
@@ -135,16 +178,19 @@ async function loadAllModules() {
   
   console.log('发现模块配置:', configs.map(c => c._source));
   
-  const [storeModules, routerRoutes] = await Promise.all([
+  const [storeModules, routerRoutes, appRouteConfig] = await Promise.all([
     loadStoreModules(configs),
-    loadRouterModules(configs)
+    loadRouterModules(configs),
+    loadAppRouteConfig(configs)
   ]);
   
   // 缓存结果
   cachedModules = {
     configs,
     store: storeModules,
-    router: routerRoutes
+    inLayoutRoutes: routerRoutes.inLayoutRoutes,
+    rootRoutes: routerRoutes.rootRoutes,
+    appRouteConfig
   };
   
   return cachedModules;
@@ -154,5 +200,6 @@ export {
   getModuleConfigs,
   loadStoreModules,
   loadRouterModules,
+  loadAppRouteConfig,
   loadAllModules
 };

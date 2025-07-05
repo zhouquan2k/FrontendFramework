@@ -1,5 +1,14 @@
 import { request } from '@/utils/utils'
 
+const lang = navigator.language || navigator.userLanguage;
+export function getAllMetadata() {
+    return request({
+        url: `/public/metadata`,
+        method: 'get',
+        params: { lang }
+    });
+}
+
 export default class CrudApi {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;

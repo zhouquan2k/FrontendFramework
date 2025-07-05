@@ -6,7 +6,7 @@
 
 <script>
 import '@/assets/styles/index.scss' // global css
-import { getAllMetadata } from '@sys/security_api';
+import { getAllMetadata } from '@/utils/api_base';
 import settings from '@/settings';
 import Vue from 'vue';
 import store from '@/store';
