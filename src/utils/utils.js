@@ -63,12 +63,14 @@ Vue.prototype.getEntityFields = function (entityName, fieldNames) {
   if (!Array.isArray(fieldNames)) //single name
     return getFieldDef(entityMetadata, fieldNames, this.$metadata);
 
-  return fieldNames.map(fieldName => {
+  const retFields = fieldNames.map(fieldName => {
     // 自定义的field对象
     if (typeof fieldName === "object" && !fieldName.name) return fieldName; //fullly customized
     var fieldDef = getFieldDef(entityMetadata, (typeof fieldName === "object") ? fieldName.name : fieldName, this.$metadata);
     return { ...fieldDef, ...((typeof fieldName === "object") ? fieldName : { name: fieldName }) };
   });
+  console.log(`getEntityFields(${entityName})`, retFields);
+  return retFields;
 }
 
 Vue.prototype.addRules = function (entityName, fieldDefs) {
@@ -107,7 +109,7 @@ export function initMetadata(object, apis, name) {
   }
 }
 
-function _addRule(object, name, rule) {
+export function _addRule(object, name, rule) {
   if (!object.rules) return;
   if (!object.rules[name])
     object.rules[name] = [];

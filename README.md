@@ -1,24 +1,11 @@
-# prog-wizard
 
-## Project setup
-```
-npm install
-```
+###### 模式
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+=== 为form添加定制的validation rule：
+现有实现：
+a. 从元数据推导rules，目前仅实现了required，需要实现更多的通用的验证，使用detail_form.rules存储所有规则
+b. detail_form增加了customRules输入参数，增加定制的rule ，参见patient.vue
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+=== trim处理
+在onSave中 执行validate()方法前，先对entity的值进行trim处理
+this.patient = trimProcess(this.patient);

@@ -38,7 +38,7 @@
     </el-form>
 </template>
 <script>
-import { initMetadata, globalDateFormat } from '@/utils/utils';
+import { initMetadata, globalDateFormat,_addRule } from '@/utils/utils';
 import DictionarySelect from '@/components/dictionary_select.vue';
 export default {
     name: 'DetailForm',
@@ -48,6 +48,7 @@ export default {
         mode: {}, // create/update/readonly
         formCols: { type: Number, default: 1 },
         toManySelectData: { default: () => ({}) },
+        customRules: { default: () => [] },
     },
     inject: {
         getCustomComponent: { default: {} }
@@ -67,6 +68,9 @@ export default {
     },
     async created() {
         await initMetadata(this, null, this.name);
+        this.customRules.forEach(rule => {
+            _addRule(this, rule.name, rule);
+        });
     }
 }
 </script>

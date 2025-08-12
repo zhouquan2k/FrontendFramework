@@ -63,7 +63,7 @@
                         <DictionaryTag
                             v-else-if="['Enum', 'Dictionary'].includes(field.type) && isValid(safeGet(scope.row, field.name))"
                             :value="safeGet(scope.row, field.name)"
-                            :dictName="field.type == 'Dictionary' ? field.typeName?.split(':')[1] : field.typeName"
+                            :dictName="(field.type == 'Dictionary' && field.typeName?.indexOf(':')>0) ? field.typeName?.split(':')[1] : field.typeName"
                             tag />
                         <span v-else-if="['RefID'].includes(field.type) && isValid(safeGet(scope.row, field.name))">
                             {{ field.refData && field.refData.startsWith('dictionary:') ?
@@ -147,6 +147,7 @@ export default {
         highlightSelectionRow: { type: Boolean, default: () => false },
         filters: { type: Array, default: () => [] },
         title: { default: () => null },
+        initSearch: { type: Boolean, default: () => true },
     },
     computed: {
         titleText() {
@@ -316,7 +317,7 @@ export default {
     },
     mounted() {
         this.searchForm = { ...this.searchParams };
-        this.onSearch();
+        if (this.initSearch) this.onSearch();
     }
 };
 </script>
