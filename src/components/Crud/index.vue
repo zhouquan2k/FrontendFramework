@@ -18,7 +18,7 @@
                     </slot>
                     <!-- 可以根据searches 里面的成员看哪些是已经定制显示了的，从而不再绘制-->
                     <el-form-item v-for="field in searchableFields" :key="field.name"
-                        v-if="!field.hidden && ['ID', 'IDStr', 'Integer', 'String', 'Enum', 'Dictionary'].includes(field.type) && !searchParam[field.name]">
+                        v-if="!field.hidden && ['ID', 'IDStr', 'Integer', 'String', 'Enum', 'Date', 'Timestamp', 'Dictionary'].includes(field.type) && !searchParam[field.name]">
                         <el-input v-model="searchForm[field.name]" v-if="['ID', 'IDStr'].includes(field.type)"
                             class="search-input" :placeholder="field.label" @keyup.enter.native="onSearch" />
                         <el-input v-model="searchForm[field.name]" v-if="['Integer'].includes(field.type)"
@@ -28,6 +28,11 @@
                         <DictionarySelect :theClass="field.name" v-model="searchForm[field.name]"
                             :dictionary="field.typeName" v-if="['Enum', 'Dictionary'].includes(field.type)"
                             :placeholder="field.label" :clearable="true" :multiple="true" />
+                        <el-date-picker v-model="searchForm[field.name]" :value-format="globalDateFormat"
+                            v-if="['Date', 'Timestamp'].includes(field.type)" class="search-input"
+                            :placeholder="field.label" type="daterange" @change="onSearch" range-separator="-"
+                            start-placeholder="开始" :end-placeholder="`结束${field.label}`" style="width: 250px">
+                        </el-date-picker>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" plain @click="onSearch">搜索</el-button>
