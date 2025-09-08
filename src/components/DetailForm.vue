@@ -4,7 +4,7 @@
         <el-row>
             <slot name="fields"></slot>
             <template v-if="!$slots['fields']">
-                <SingleEditor :meta="field.name" v-for="field in fields" />
+                <SingleEditor :meta="field.name" v-for="field in fields" :mode="mode" />
             </template>
             <div style="margin:10px">
                 <slot name="buttons"></slot>

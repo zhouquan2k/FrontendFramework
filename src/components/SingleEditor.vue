@@ -1,7 +1,8 @@
 <template>
     <el-col :key="`col-${theName}`" :span="24 / (type == 'Text' ? 1 : formCols)">
         <el-form-item :name="theName" :label="theLabel" :prop="theName">
-            <span v-if="mode == 'readonly' || theType == 'Timestamp'">{{ safeGet(value, theName) }}</span>
+            <span v-if="mode == 'readonly' || theType == 'Timestamp' || theType == 'IDStr' && mode === 'update'">{{ safeGet(value, theName) }}</span>
+            
             <el-input :value="safeGet(value, theName)" v-else-if="['Integer', 'Decimal'].includes(theType)"
                 style="width:100px;" @input="(newValue) => safeSet(value, theName, newValue)"></el-input>
             <el-input :type="theType == 'Text' ? 'textarea' : 'text'" :value="safeGet(value, theName)"

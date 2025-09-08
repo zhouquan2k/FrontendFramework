@@ -58,7 +58,7 @@ Vue.prototype.getEntityFields = function (entityName, fieldNames) {
   else if (fieldNames == 'searchable')
     return this.$metadata.entitiesMap[entityName].fields.filter(field => !field.hidden && field.searchable);
   else if (fieldNames == 'editable')
-    return this.$metadata.entitiesMap[entityName].fields.filter(field => !field.hidden && field.editable);
+    return this.$metadata.entitiesMap[entityName].fields.filter(field => !field.hidden && (field.editable || field.type === 'IDStr'));
 
   if (!Array.isArray(fieldNames)) //single name
     return getFieldDef(entityMetadata, fieldNames, this.$metadata);

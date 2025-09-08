@@ -35,6 +35,8 @@
                 </el-form>
             </div>
             <div>
+                <el-button v-if="createButton" type="success" plain icon="el-icon-plus" size="mini" @click="showAddDialog"
+                    >新建</el-button>
                 <slot name="buttons"></slot>
             </div>
         </div>
@@ -149,6 +151,7 @@ export default {
         showDialog: { type: String },
         writePermission: { type: String, default: () => null },
         highlightCurrentRow: { default: () => true },
+        createButton: { type: Boolean, default: () => false },
     },
     watch: {
         fixedSearchParams: {
@@ -284,7 +287,7 @@ export default {
         },
         // 增删改查的所有功能
         showAddDialog(current) {
-            const record = { parentId: current ? current[this.metadata.idField] : null };
+            const record = { parentId: current ? current[this.$metadata.entitiesMap[this.meta].idField] : null };
             this.$metadata.entitiesMap[this.meta].fields.forEach(field => record[field.name] = field.defaultValue ? field.defaultValue : null);
             this.detail = record;
             this.mode = 'create';
@@ -319,7 +322,7 @@ export default {
                     }
                 }
                 else {
-                    this.$emit('do-delete', detail);
+                    this.$emit('do-delete', detail, detail[this.$metadata.entitiesMap[this.meta].idField]);
                 }
             });
         },
