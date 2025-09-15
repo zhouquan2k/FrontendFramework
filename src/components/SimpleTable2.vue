@@ -105,7 +105,7 @@
         <el-dialog v-if="dialogVisible" :title="`${label} - ${dialogTitle}`" :visible.sync="dialogVisible" :close-on-click-modal="false">
             <DetailForm ref="detail-form" :name="meta" :meta="meta" :detail="detail" :formCols="formCols" :mode="mode">
                 <template #fields>
-                    <slot name="fields" :data="detail"></slot>
+                    <slot name="fields" :data="detail" :mode="mode"></slot>
                 </template>
             </DetailForm>
             <span slot="footer" class="dialog-footer">
@@ -288,7 +288,15 @@ export default {
         // 增删改查的所有功能
         showAddDialog(current) {
             const record = { parentId: current ? current[this.$metadata.entitiesMap[this.meta].idField] : null };
-            this.$metadata.entitiesMap[this.meta].fields.forEach(field => record[field.name] = field.defaultValue ? field.defaultValue : null);
+            this.$metadata.entitiesMap[this.meta].fields.forEach(field => {
+                if (field.type === 'ToMany') {
+                    record[field.name] = [];
+                } else if (field.type === 'ToOne') {
+                    record[field.name] = {};
+                } else {
+                    record[field.name] = field.defaultValue ? field.defaultValue : null;
+                }
+            });
             this.detail = record;
             this.mode = 'create';
             this.dialogTitle = '新建';
