@@ -42,6 +42,7 @@
         </div>
 
         <el-table :key="tableUpdateKey" ref="table" class="main-table" :data="list" :row-key="getRowKey"
+            v-loading="loading"
             :default-expand-all="false" @selection-change="handleSelectionChange" @row-dblclick="handleDblClick"
             :row-class-name="rowClassName" @expand-change="row => $emit('expand-change', row)" :empty-text="emptyText"
             :highlight-current-row="highlightCurrentRow" @current-change="row => $emit('current-change', row)"
@@ -130,7 +131,7 @@ export default {
         meta: { type: String },
         label: { default: () => '' }, // entity's name
         data: { type: Array, default: () => null },
-        // idCol: { default: () => 'id' },
+        loading: { default: () => false },
         formCols: { type: Number, default: () => 1 },
         searchMethod: { type: Function },
         actions: { type: Array, default: () => ([]) },
@@ -266,7 +267,8 @@ export default {
             this.$emit('row-dblclick', data);
         },
         refreshTable() {
-            this.tableUpdateKey++;
+            // this.tableUpdateKey++;
+            this.onSearch();
         },
         defaultSummaryMethod(param) {
             const { columns, data } = param;
