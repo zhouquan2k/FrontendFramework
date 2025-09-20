@@ -134,6 +134,7 @@ export default {
         loading: { default: () => false },
         formCols: { type: Number, default: () => 1 },
         searchMethod: { type: Function },
+        fetchMethod: { type: Function },
         actions: { type: Array, default: () => ([]) },
         searchParams: { type: Object, default: () => ({}) }, // searchForm的初值，可变
         fixedSearchParams: { type: Object, default: () => ({}) },
@@ -304,8 +305,11 @@ export default {
             this.dialogTitle = '新建';
             this.dialogVisible = true;
         },
-        showEditDialog(row) {
-            const record = this.oneTimeSave ? row : { ...row }; // TODO
+        async showEditDialog(row) {
+            let record = this.oneTimeSave ? row : { ...row }; // TODO
+            if (this.fetchMethod) {
+                record = await this.fetchMethod(row[this.$metadata.entitiesMap[this.meta].idField]);
+            }
             this.$metadata.entitiesMap[this.meta].fields.forEach(field => { if (!Object.hasOwn(record, field.name)) record[field.name] = field.defaultValue ? field.defaultValue : null });
             this.$set(this, 'detail', record);
             this.mode = 'update';
