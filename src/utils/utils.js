@@ -214,10 +214,14 @@ export function request(options) {
   // common request handler
   if (options.This && options.loading) options.This[options.loading] = true;
   return _request({ baseURL: process.env.VUE_APP_BASE_API, ...options }).then(response => {
-    // common response handler
+    // common response handler: if header.content-type is json
     resetFlag(options.This, options.loading);
-    mappingId(options.idField, response.result);
-    return response.result;
+    if (response.headers?.['content-type'] === 'application/json') {  
+      mappingId(options.idField, response.result);
+      return response.result;
+    } else {
+      return response;
+    }
   }).catch(error => {
     // common exception handler
     resetFlag(options.This, options.loading);

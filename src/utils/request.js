@@ -114,7 +114,8 @@ service.interceptors.response.use(async res => {
   // 获取错误信息
   //const msg = res.data.msg || errorCode[code] || errorCode['default']
   //if (res.status == 200)
-  return res.data;
+  // 如果不是json 返回文本
+  return res.headers['content-type'] === 'application/json' ? {...res.data, headers: res.headers} : res.data;
   //return errorHandler(res.status, res.statusText, res);
 }, async error => {
   return errorHandler(error.response?.status, error.response?.data ? error.response.data.message : error.message, error);
