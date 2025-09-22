@@ -369,7 +369,8 @@ Vue.prototype.$warning = function (msg) {
   this.$notify({
     title: '警告',
     message: msg,
-    type: 'warning'
+    type: 'warning',
+    customClass: 'my-box' 
   });
 };
 
@@ -377,7 +378,17 @@ Vue.prototype.$Confirm = async function (confirmMessage) {
   await this.$confirm(confirmMessage, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    type: 'warning'
+    type: 'warning',
+    customClass: 'my-box' 
+  });
+}
+
+Vue.prototype.$error = async function (errMessage) {
+  this.$notify({
+    title: '错误',
+    message: errMessage,
+    type: 'error',
+    customClass: 'my-box',
   });
 }
 
@@ -405,5 +416,6 @@ Vue.prototype.$defaultActionEmit = function (event, row) {
 }
 
 Vue.prototype.$dictLabel = function (dictName, value) {
-  return this.$metadata.dictionariesMap[dictName]?.[value]?.label;
+  return this.$metadata.dictionariesMap[dictName] ?
+    (this.$metadata.dictionariesMap[dictName][value] ? this.$metadata.dictionariesMap[dictName][value].label : value) : value;
 }
