@@ -9,7 +9,7 @@ export default {
   // Store 模块配置
   store: [
     {
-      name: ['system', 'user'],
+      name: ['system'], //'user'
       path: '@sys/store/system'
     }
   ],

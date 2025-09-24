@@ -38,7 +38,7 @@ export default class CrudApi {
     constructor(baseUrl, metaName) {
         this.baseUrl = baseUrl;
         if (metaName)
-            this.metadata = g_allMetadata.entitiesMap[metaName];
+            this.metadata = g_allMetadata?.entitiesMap?.[metaName];
     }
 
     async get(id, options) {

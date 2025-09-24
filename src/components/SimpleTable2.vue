@@ -208,7 +208,7 @@ export default {
             const data = this.list.map(row => columns.filter(col => col.label && col.property).map(col => {
                 const theCol = this.columns.find(c => c.name === col.property);
                 if (theCol?.type === 'Enum' || theCol?.type === 'Dictionary' || theCol?.type === 'RefID')
-                    return this.dictFormatter(theCol?.type === 'RefID' ? theCol.refData.startsWith('dictionary:') ? theCol.refData.substring(11) : theCol.refData : theCol.typeName, safeGet(row, theCol.name));
+                    return this.$dictLabel(theCol?.type === 'RefID' ? theCol.refData.startsWith('dictionary:') ? theCol.refData.substring(11) : theCol.refData : theCol.typeName, safeGet(row, theCol.name));
                 return safeGet(row, col.property);
 
             }));

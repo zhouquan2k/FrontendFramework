@@ -1,6 +1,7 @@
 import _request from '@/utils/request'
 import store from '@/store'
 import { getAccessToken } from '@/utils/auth'
+import { g_allMetadata } from '@/utils/api_base'
 
 
 export function isValid(value) {
@@ -301,8 +302,13 @@ export function booleanFormatter(value) {
   return value ? "是" : "否";
 }
 
-Vue.prototype.dictFormatter = function (type, value) {
-  return this.$metadata.dictionariesMap[type][value]?.label;
+export function dictFormatter(type, value) {
+  return g_allMetadata.dictionariesMap[type][value]?.label;
+}
+
+Vue.prototype.$dictLabel = function (dictName, value) {
+  return this.$metadata.dictionariesMap[dictName] ?
+    (this.$metadata.dictionariesMap[dictName][value] ? this.$metadata.dictionariesMap[dictName][value].label : value) : value;
 }
 
 export function startTime(d, days = 0) {
@@ -415,7 +421,3 @@ Vue.prototype.$defaultActionEmit = function (event, row) {
   return false;
 }
 
-Vue.prototype.$dictLabel = function (dictName, value) {
-  return this.$metadata.dictionariesMap[dictName] ?
-    (this.$metadata.dictionariesMap[dictName][value] ? this.$metadata.dictionariesMap[dictName][value].label : value) : value;
-}
