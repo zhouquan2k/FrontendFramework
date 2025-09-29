@@ -394,7 +394,7 @@ Vue.prototype.$error = async function (errMessage) {
     title: '错误',
     message: errMessage,
     type: 'error',
-    customClass: 'my-box',
+    customClass: 'my-box-error',
   });
 }
 
