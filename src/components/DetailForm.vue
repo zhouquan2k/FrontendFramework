@@ -13,7 +13,7 @@
     </el-form>
 </template>
 <script>
-import { globalDateFormat } from '@/utils/utils';
+import { globalDateFormat, _addRule } from '@/utils/utils';
 import SingleEditor from '@/components/SingleEditor.vue';
 export default {
     name: 'DetailForm',
@@ -51,6 +51,7 @@ export default {
     },
     created() {
         this.fields = this.getEntityFields(this.meta, 'editable');
+        this.addRules(this.meta, "detail");
     }
 }
 </script>

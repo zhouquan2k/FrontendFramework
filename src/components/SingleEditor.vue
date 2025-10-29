@@ -1,6 +1,6 @@
 <template>
     <el-col :key="`col-${theName}`" :span="24 / (type == 'Text' ? 1 : formCols)">
-        <el-form-item :name="theName" :label="theLabel" :prop="theName">
+        <el-form-item :name="theName" :label="theLabel" :prop="theName" :required="!fieldMeta?.nullable">
             <span v-if="mode == 'readonly' || theType == 'Timestamp' || theType == 'IDStr' && mode === 'update'">{{ safeGet(value, theName) }}</span>
             
             <el-input :value="safeGet(value, theName)" v-else-if="['Integer', 'Decimal'].includes(theType)"
@@ -43,6 +43,7 @@ export default {
             theName: '',
             theType: '',
             theDictionary: '',
+            fieldMeta: null,
 
             globalDateFormat,
             rules: {},
@@ -60,11 +61,11 @@ export default {
         init() {
             if (this.meta) {
                 const entityMeta = this.$metadata.entitiesMap[this.entity];
-                const fieldMeta = getFieldDef(entityMeta, this.meta, this.$metadata);
-                this.theLabel = this.label || fieldMeta?.label;
+                this.fieldMeta = getFieldDef(entityMeta, this.meta, this.$metadata);
+                this.theLabel = this.label || this.fieldMeta?.label;
                 this.theName = this.name || this.meta;
-                this.theType = this.type || fieldMeta?.type;
-                this.theDictionary = this.dictionary || fieldMeta?.typeName;
+                this.theType = this.type || this.fieldMeta?.type;
+                this.theDictionary = this.dictionary || this.fieldMeta?.typeName;
             }
             else {
                 this.theLabel = this.label;

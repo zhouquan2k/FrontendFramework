@@ -104,7 +104,7 @@
         </el-table>
 
         <el-dialog v-if="dialogVisible" :title="`${label} - ${dialogTitle}`" :visible.sync="dialogVisible" :close-on-click-modal="false">
-            <DetailForm ref="detail-form" :name="meta" :meta="meta" :detail="detail" :formCols="formCols" :mode="mode">
+            <DetailForm ref="detail-form" :name="meta" :meta="meta" :detail="detail" :formCols="formCols" :mode="mode" >
                 <template #fields>
                     <slot name="fields" :data="detail" :mode="mode"></slot>
                 </template>
@@ -112,7 +112,7 @@
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false" v-if="oneTimeSave">关闭</el-button>
                 <el-button @click="dialogVisible = false" v-if="!oneTimeSave">取消</el-button>
-                <el-button type="primary" @click="$emit('do-save', detail); dialogVisible = false"
+                <el-button type="primary" @click="onSave"
                     v-if="mode != 'readonly' && !oneTimeSave">确定</el-button>
             </span>
         </el-dialog>
@@ -138,6 +138,7 @@ export default {
         actions: { type: Array, default: () => ([]) },
         searchParams: { type: Object, default: () => ({}) }, // searchForm的初值，可变
         fixedSearchParams: { type: Object, default: () => ({}) },
+        
         toolbarVisible: { type: Boolean, default: () => true },
         searchVisible: { type: Boolean, default: () => true },
         checkboxVisible: { type: Boolean, default: () => false },
@@ -296,6 +297,8 @@ export default {
                     record[field.name] = [];
                 } else if (field.type === 'ToOne') {
                     record[field.name] = {};
+                } else if (field.typeName === 'Boolean') {
+                    record[field.name] = field.defaultValue == 1 ? true : field.defaultValue == 0 ? false : null;
                 } else {
                     record[field.name] = field.defaultValue ? field.defaultValue : null;
                 }
@@ -321,6 +324,16 @@ export default {
             this.dialogTitle = '详情';
             this.mode = 'readonly';
             this.dialogVisible = true;
+        },
+        async onSave() {
+            this.$refs['detail-form'].validate((success)=> {
+                if (!success) {
+                    this.$message.error('表单验证未通过，请检查输入项');
+                    return;
+                };
+                this.$emit('do-save', detail); 
+                this.dialogVisible = false;
+            });
         },
         onDelete(detail) {
             this.detail = detail;
