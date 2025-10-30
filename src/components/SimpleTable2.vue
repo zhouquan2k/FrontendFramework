@@ -331,7 +331,7 @@ export default {
                     this.$message.error('表单验证未通过，请检查输入项');
                     return;
                 };
-                this.$emit('do-save', detail); 
+                this.$emit('do-save', this.detail); 
                 this.dialogVisible = false;
             });
         },
