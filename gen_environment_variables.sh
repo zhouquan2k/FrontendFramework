@@ -4,6 +4,7 @@ ROOT_DIR=/usr/share/nginx/html
 for file in $ROOT_DIR/js/*.js* $ROOT_DIR/index.html $ROOT_DIR/precache-manifest*.js;
 do
   sed -i 's|VUE_APP_ENV_PLACEHOLDER|'${VUE_APP_ENV}'|g' $file
+  sed -i 's|VUE_APP_TRACKING_SCAN_DEBOUNCE|'${VUE_APP_TRACKING_SCAN_DEBOUNCE}'|g' $file
   # Your other variables here...
 done
 
