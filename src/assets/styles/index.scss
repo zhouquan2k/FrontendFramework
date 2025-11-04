@@ -247,3 +247,15 @@ aside {
 .my-box-error {
   background-color: #ffcccc !important;
 }
+
+
+.el-notification.my-box-error {
+  max-width: 70vw;            /* 放宽宽度，默认较窄 */
+}
+
+.el-notification.my-box-error .el-notification__content {
+  white-space: pre-wrap;       /* 保留换行符 */
+  word-break: break-word;      /* 单词换行，避免超长单词撑破布局 */
+  max-height: 50vh;            /* 限制最大高度 */
+  overflow: auto;              /* 内容可滚动查看 */
+}
