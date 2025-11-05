@@ -34,6 +34,13 @@ export function getAllMetadata() {
     });
 }
 
+export async function getServerEnv() {
+    return await request({
+        url: `/public/env`,
+        method: 'get'
+    });
+}
+
 export default class CrudApi {
     constructor(baseUrl, metaName) {
         this.baseUrl = baseUrl;

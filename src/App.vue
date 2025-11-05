@@ -6,7 +6,7 @@
 
 <script>
 import '@/assets/styles/index.scss' // global css
-import { getAllMetadata } from '@/utils/api_base';
+import { getAllMetadata, getServerEnv } from '@/utils/api_base';
 import settings from '@/settings';
 import Vue from 'vue';
 import store from '@/store';
@@ -32,8 +32,10 @@ export default {
     //获取当前用户信息
 
     const allMetadata = await getAllMetadata();
+    const env = await getServerEnv();
     console.log('Metadata loaded:', allMetadata);
     Vue.prototype.$metadata = allMetadata;
+    Vue.prototype.$serverEnv = env;
     this.metadataReady = true;
   }
 }
