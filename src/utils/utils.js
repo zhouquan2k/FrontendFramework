@@ -3,6 +3,13 @@ import store from '@/store'
 import { getAccessToken } from '@/utils/auth'
 import { g_allMetadata } from '@/utils/api_base'
 
+(function() {
+  const originalLog = console.log;
+  console.log = function(...args) {
+    const timestamp = new Date().toISOString();
+    originalLog.call(console, `[${timestamp}]`, ...args);
+  };
+})();
 
 export function isValid(value) {
   return value !== null && value !== undefined;
