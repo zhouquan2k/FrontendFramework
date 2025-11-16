@@ -8,7 +8,7 @@
                         <el-form-item v-for="field in searches" :key="field.name"
                             v-if="$scopedSlots[`searches-${field.name}`] || !field.hidden && ['ID', 'IDStr', 'Integer', 'String', 'Enum', 'Dictionary', 'Date', 'Timestamp'].includes(field.type) && !fixedSearchParams[field.name]">
                             <template v-if="$scopedSlots[`searches-${field.name}`]">
-                                <slot :name="`searches-${field.name}`"></slot>
+                                <slot :name="`searches-${field.name}`" :data="searchForm" :doSearch="onSearch"></slot>
                             </template>
                             <el-input v-model="searchForm[field.name]" v-else-if="['ID', 'IDStr'].includes(field.type)"
                                 class="search-input" :placeholder="field.label" @keyup.enter.native="onSearch" />
