@@ -29,14 +29,28 @@ export default {
     }
   },
   async created() {
-    //获取当前用户信息
+    try {
+      // 确保动态 Store 模块（含 system）已注册
+      if (store.initDynamicModules) {
+        await store.initDynamicModules();
+      }
 
-    const allMetadata = await getAllMetadata();
-    const env = await getServerEnv();
-    console.log('Metadata loaded:', allMetadata);
-    Vue.prototype.$metadata = allMetadata;
-    Vue.prototype.$serverEnv = env;
-    this.metadataReady = true;
+      // 先加载 metadata，再加载用户与环境
+      const allMetadata = await getAllMetadata();
+      console.log('Metadata loaded:', allMetadata);
+      Vue.prototype.$metadata = allMetadata;
+
+      const [user, env] = await Promise.all([
+        store.dispatch('GetInfo'),
+        getServerEnv()
+      ]);
+      Vue.prototype.$serverEnv = env;
+    } catch (err) {
+      console.warn('初始化信息获取失败', err);
+    } finally {
+      // 确保不阻塞页面渲染
+      this.metadataReady = true;
+    }
   }
 }
 </script>

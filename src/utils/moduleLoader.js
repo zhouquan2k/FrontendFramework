@@ -9,6 +9,7 @@
  * 使用 webpack 魔法注释让 webpack 包含所有可能的模块
  */
 import AllModules from '../../modules/all-modules';
+import { setNavbarExtension, clearNavbarExtension } from '@/layout/navbarExtension';
 
 // 缓存已加载的模块，避免重复加载
 let cachedModules = null;
@@ -17,12 +18,20 @@ function findModuleByAlias(aliasPath) {
   for (const prefix in AllModules) {
     const ctx = AllModules[prefix];
     if (aliasPath.startsWith(prefix)) {
-      let relPath = './' + aliasPath.slice(prefix.length);
-      if (!relPath.endsWith('.js')) relPath += '.js';
-      if (ctx && ctx.keys().includes(relPath)) {
-        const mod = ctx(relPath);
-        return mod.default || mod;
+      const rawRel = './' + aliasPath.slice(prefix.length);
+      const hasExt = rawRel.endsWith('.js') || rawRel.endsWith('.vue');
+      const candidates = hasExt ? [rawRel] : [`${rawRel}.js`, `${rawRel}.vue`];
+
+      for (const relPath of candidates) {
+        if (ctx && ctx.keys().includes(relPath)) {
+          const mod = ctx(relPath);
+          return mod.default || mod;
+        }
       }
+      const keys = ctx ? ctx.keys() : [];
+      console.warn(
+        `未在模块 ${prefix} 中找到路径: ${aliasPath}, 候选: ${candidates.join(', ')}, 可用文件数量: ${keys.length}, 示例: ${keys.slice(0, 10).join(', ')}`
+      );
     }
   }
   return null;
@@ -57,6 +66,31 @@ function getModuleConfigs() {
   }
   
   return configs;
+}
+
+/**
+ * 加载 Navbar 扩展组件
+ */
+async function loadNavbarExtension(configs) {
+  clearNavbarExtension();
+
+  for (const config of configs) {
+    if (config.navbarExtension && config.navbarExtension.component) {
+      const { component, mode } = config.navbarExtension;
+      const mod = findModuleByAlias(component);
+      if (mod) {
+        const ext = mod.default || mod;
+        setNavbarExtension({
+          component: ext,
+          mode: mode || 'append',
+        });
+        console.log(`✅ 成功加载 Navbar 扩展: ${component}`);
+        return;
+      } else {
+        console.warn(`未找到 Navbar 扩展组件: ${component}`);
+      }
+    }
+  }
 }
 
 /**
@@ -183,6 +217,9 @@ async function loadAllModules() {
     loadRouterModules(configs),
     loadAppRouteConfig(configs)
   ]);
+
+  // Navbar 扩展无需 await（同步处理）
+  loadNavbarExtension(configs);
   
   // 缓存结果
   cachedModules = {

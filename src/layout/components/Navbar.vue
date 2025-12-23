@@ -12,7 +12,10 @@
 
       <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav" />
     </div>
-    <div v-if="title" class="title">
+    <div v-if="navbarExtension" class="title">
+      <component :is="navbarExtension.component" />
+    </div>
+    <div v-else-if="title" class="title">
       <div class="text"><a :href="url">{{ title }}</a></div>
     </div>
     <div class="right-menu">
@@ -68,6 +71,7 @@ import Screenfull from '@/layout/components/Screenfull'
 import SizeSelect from '@/layout/components/SizeSelect'
 import Search from '@/layout/components/HeaderSearch'
 import { env } from '@/settings'
+import { getNavbarExtension } from '@/layout/navbarExtension'
 
 export default {
   components: {
@@ -80,7 +84,8 @@ export default {
   },
   data() {
     return {
-      env
+      env,
+      navbarExtension: getNavbarExtension()
     }
   },
   computed: {
@@ -110,6 +115,11 @@ export default {
       }
     }
   },
+  watch: {
+    navbarExtension(val) {
+      console.log('Navbar extension changed:', val);
+    }
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
@@ -129,6 +139,7 @@ export default {
   },
   created() {
     console.log("env..." + this.env);
+    console.log('Navbar extension in created:', this.navbarExtension);
   }
 }
 </script>
